@@ -41,8 +41,7 @@ Testing rules:
 Run locally before handing off code changes:
 
 ```bash
-python3 -m coverage run --source=src -m pytest
-python3 -m coverage report --fail-under=80
+bash scripts/check
 ```
 
-GitHub also runs this coverage gate through the check workflow on every push and pull request.
+GitHub also runs this command through the check workflow on every push and pull request.

@@ -11,8 +11,7 @@ Run:
 ```bash
 python3 -m pytest tests/unit
 python3 -m pytest tests/integration
-python3 -m coverage run --source=src -m pytest
-python3 -m coverage report --fail-under=80
+bash scripts/check
 ```
 
-The GitHub check workflow runs the coverage gate on every push and pull request.
+The GitHub check workflow runs `bash scripts/check` on every push and pull request.

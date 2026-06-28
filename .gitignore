@@ -1,4 +1,5 @@
 data/raw/
+data/selected/
 data/**/.cache/
 .cache/
 docs/ignore

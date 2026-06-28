@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run the full pytest suite with source coverage.
+python3 -m coverage run --source=src -m pytest
+
+# Fail if total coverage drops below the project floor.
+python3 -m coverage report --fail-under=80
