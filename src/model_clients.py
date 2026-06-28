@@ -59,6 +59,9 @@ PROVIDER_LATENCY_PATHS = (
     ("time_info", "total_time_ms"),
     ("time_info", "latency_ms"),
 )
+PROVIDER_LATENCY_SECONDS_PATHS = (
+    ("time_info", "total_time"),
+)
 
 
 def validate_model_request(request: ModelRequest) -> None:
@@ -84,18 +87,26 @@ def validate_model_request(request: ModelRequest) -> None:
             raise ModelClientError("image_paths must contain pathlib.Path values")
 
 
-def provider_reported_latency_ms(provider_metadata: Mapping[str, Any]) -> int | float | None:
-    """Return provider-reported total latency when known metadata fields exist."""
-    for path in PROVIDER_LATENCY_PATHS:
-        value: Any = provider_metadata
-        for key in path:
-            if not isinstance(value, Mapping):
-                value = None
-                break
-            value = value.get(key)
+def _metadata_path_value(metadata: Mapping[str, Any], path: tuple[str, ...]) -> Any:
+    value: Any = metadata
+    for key in path:
+        if not isinstance(value, Mapping):
+            return None
+        value = value.get(key)
+    return value
 
+
+def provider_reported_latency_ms(provider_metadata: Mapping[str, Any]) -> int | float | None:
+    """Return provider-reported total latency in milliseconds when known fields exist."""
+    for path in PROVIDER_LATENCY_PATHS:
+        value = _metadata_path_value(provider_metadata, path)
         if isinstance(value, int | float):
             return value
+
+    for path in PROVIDER_LATENCY_SECONDS_PATHS:
+        value = _metadata_path_value(provider_metadata, path)
+        if isinstance(value, int | float):
+            return value * 1000
 
     return None
 

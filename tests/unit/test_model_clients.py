@@ -117,6 +117,7 @@ def test_provider_reported_latency_ms_reads_github_and_cerebras_shapes():
         {"usage": {"latency_checkpoint": {"total_duration_ms": 210}}}
     ) == 210
     assert provider_reported_latency_ms({"time_info": {"total_time_ms": 125.5}}) == 125.5
+    assert provider_reported_latency_ms({"time_info": {"total_time": 0.18703985214233398}}) == 187.03985214233398
     assert provider_reported_latency_ms({"usage": {"total_tokens": 24}}) is None
 
 
