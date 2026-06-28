@@ -12,5 +12,6 @@ src/
 ├── prompts.py            # build multiple-choice prompts
 ├── results.py            # persist scored result rows
 ├── scoring.py            # parse answers and score deadline metrics
+├── workflow_runner.py    # run selected workflow batches from the command line
 └── workflows.py          # run benchmark-compatible global and per-UAV fusion workflows
 ```

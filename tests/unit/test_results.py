@@ -1,6 +1,6 @@
 import pytest
 
-from src.results import ResultFormatError, read_jsonl, write_jsonl
+from src.results import ResultFormatError, append_jsonl, read_jsonl, write_jsonl
 from src.scoring import score_answer
 
 
@@ -21,6 +21,15 @@ def test_write_jsonl_creates_parent_directories(tmp_path):
     write_jsonl(path, [score_answer("B", "B", latency_ms=1, deadline_ms=400)])
 
     assert path.exists()
+
+
+def test_append_jsonl_preserves_existing_rows(tmp_path):
+    path = tmp_path / "scores.jsonl"
+    write_jsonl(path, [{"question_id": "case-1"}])
+
+    append_jsonl(path, [{"question_id": "case-2"}])
+
+    assert list(read_jsonl(path)) == [{"question_id": "case-1"}, {"question_id": "case-2"}]
 
 
 def test_read_jsonl_skips_blank_lines(tmp_path):

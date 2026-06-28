@@ -24,6 +24,17 @@ def write_jsonl(path: Path | str, rows: Iterable[Mapping[str, Any]]) -> None:
             file.write("\n")
 
 
+def append_jsonl(path: Path | str, rows: Iterable[Mapping[str, Any]]) -> None:
+    """Append scored result rows as newline-delimited JSON."""
+    result_path = Path(path)
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with result_path.open("a", encoding="utf-8") as file:
+        for row in rows:
+            file.write(json.dumps(dict(row), sort_keys=True))
+            file.write("\n")
+
+
 def read_jsonl(path: Path | str) -> Iterator[dict[str, Any]]:
     """Read newline-delimited JSON result rows."""
     result_path = Path(path)
