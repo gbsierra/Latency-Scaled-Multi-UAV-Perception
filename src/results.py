@@ -12,6 +12,40 @@ class ResultFormatError(ValueError):
     """Raised when a result file contains invalid JSONL rows."""
 
 
+def to_jsonable(value: Any) -> Any:
+    """Convert common SDK and Python objects into JSON-serializable values."""
+    if value is None or isinstance(value, str | int | float | bool):
+        return value
+
+    if isinstance(value, Path):
+        return str(value)
+
+    if isinstance(value, list | tuple):
+        return [to_jsonable(item) for item in value]
+
+    if isinstance(value, Mapping):
+        return {str(key): to_jsonable(item) for key, item in value.items()}
+
+    # Pydantic-style SDK models often expose a dict conversion method.
+    model_dump = getattr(value, "model_dump", None)
+    if callable(model_dump):
+        return to_jsonable(model_dump())
+
+    as_dict = getattr(value, "dict", None)
+    if callable(as_dict):
+        return to_jsonable(as_dict())
+
+    if hasattr(value, "__dict__"):
+        return to_jsonable(vars(value))
+
+    return str(value)
+
+
+def jsonl_line(row: Mapping[str, Any]) -> str:
+    """Serialize one result row for JSONL persistence."""
+    return json.dumps(to_jsonable(row), sort_keys=True)
+
+
 def write_jsonl(path: Path | str, rows: Iterable[Mapping[str, Any]]) -> None:
     """Write scored result rows as newline-delimited JSON."""
     result_path = Path(path)
@@ -20,7 +54,7 @@ def write_jsonl(path: Path | str, rows: Iterable[Mapping[str, Any]]) -> None:
     with result_path.open("w", encoding="utf-8") as file:
         for row in rows:
             # Preserve row fields exactly; do not invent benchmark outputs here.
-            file.write(json.dumps(dict(row), sort_keys=True))
+            file.write(jsonl_line(row))
             file.write("\n")
 
 
@@ -31,7 +65,7 @@ def append_jsonl(path: Path | str, rows: Iterable[Mapping[str, Any]]) -> None:
 
     with result_path.open("a", encoding="utf-8") as file:
         for row in rows:
-            file.write(json.dumps(dict(row), sort_keys=True))
+            file.write(jsonl_line(row))
             file.write("\n")
 
 

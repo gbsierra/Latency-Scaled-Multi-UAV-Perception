@@ -55,7 +55,10 @@ def test_build_workflow_row_scores_final_answer_and_keeps_run_fields(tmp_path):
         prompt_template_id="prompt-v1",
         run_index=3,
         experiment_id="exp-1",
-        provider_metadata={"client_timing": {"provider_call_ms": 200}},
+        provider_metadata={
+            "client_timing": {"provider_call_ms": 200},
+            "time_info": {"total_time_ms": 225},
+        },
     )
 
     assert row["experiment_id"] == "exp-1"
@@ -63,6 +66,7 @@ def test_build_workflow_row_scores_final_answer_and_keeps_run_fields(tmp_path):
     assert row["prompt_template_id"] == "prompt-v1"
     assert row["run_index"] == 3
     assert row["provider_call_ms"] == 200
+    assert row["provider_reported_latency_ms"] == 225
     assert row["raw_image_bytes"] == 4
     assert row["correct"] is True
     assert row["actionable"] is True
@@ -108,7 +112,13 @@ def test_run_parallel_uav_fusion_records_observers_and_scores_workflow_latency(t
         if request.image_paths:
             uav_id = request.metadata["uav_id"]
             return ModelOutput(raw_text=f"{uav_id} evidence", provider_metadata={})
-        return ModelOutput(raw_text="Answer: B", provider_metadata={"client_timing": {"provider_call_ms": 10}})
+        return ModelOutput(
+            raw_text="Answer: B",
+            provider_metadata={
+                "client_timing": {"provider_call_ms": 10},
+                "time_info": {"total_time_ms": 25},
+            },
+        )
 
     row = run_parallel_uav_fusion(
         case,
@@ -127,6 +137,7 @@ def test_run_parallel_uav_fusion_records_observers_and_scores_workflow_latency(t
     assert row["client_wall_clock_latency_ms"] == 1750.0
     assert row["fusion_latency_ms"] >= 0
     assert row["provider_call_ms"] == 10
+    assert row["provider_reported_latency_ms"] == 25
     assert row["correct"] is True
     assert row["actionable"] is True
     assert [output["uav_id"] for output in row["observer_outputs"]] == ["UAV1", "UAV2"]

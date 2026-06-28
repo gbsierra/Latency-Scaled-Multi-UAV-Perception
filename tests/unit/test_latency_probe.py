@@ -104,6 +104,10 @@ def test_provider_reported_latency_ms_returns_none_without_checkpoint():
     assert provider_reported_latency_ms({"usage": {"total_tokens": 24}}) is None
 
 
+def test_provider_reported_latency_ms_reads_cerebras_time_info():
+    assert provider_reported_latency_ms({"time_info": {"total_time_ms": 321}}) == 321
+
+
 def test_provider_default_models_include_github_and_cerebras():
     assert PROVIDER_DEFAULT_MODELS[GITHUB_MODELS_PROVIDER] == PHI_4_MULTIMODAL_MODEL
     assert PROVIDER_DEFAULT_MODELS[CEREBRAS_PROVIDER] == GEMMA_4_31B_MODEL

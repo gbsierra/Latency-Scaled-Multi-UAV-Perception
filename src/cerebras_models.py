@@ -8,6 +8,7 @@ from typing import Any, Protocol
 
 from src.image_payloads import ImagePayloadError, image_data_url
 from src.model_clients import ModelClientError, ModelOutput, ModelRequest
+from src.results import to_jsonable
 
 
 CEREBRAS_PROVIDER = "cerebras"
@@ -62,28 +63,7 @@ def response_value(response: Any, key: str) -> Any:
 
 def json_safe(value: Any) -> Any:
     """Convert SDK response objects into JSON-serializable values."""
-    if value is None or isinstance(value, str | int | float | bool):
-        return value
-
-    if isinstance(value, list | tuple):
-        return [json_safe(item) for item in value]
-
-    if isinstance(value, dict):
-        return {str(key): json_safe(item) for key, item in value.items()}
-
-    # Pydantic-style SDK models often expose a dict conversion method.
-    model_dump = getattr(value, "model_dump", None)
-    if callable(model_dump):
-        return json_safe(model_dump())
-
-    as_dict = getattr(value, "dict", None)
-    if callable(as_dict):
-        return json_safe(as_dict())
-
-    if hasattr(value, "__dict__"):
-        return json_safe(vars(value))
-
-    return str(value)
+    return to_jsonable(value)
 
 
 def parse_cerebras_response(response: Any) -> ModelOutput:
@@ -107,6 +87,7 @@ def parse_cerebras_response(response: Any) -> ModelOutput:
             "created": json_safe(response_value(response, "created")),
             "system_fingerprint": json_safe(response_value(response, "system_fingerprint")),
             "usage": json_safe(response_value(response, "usage")),
+            "time_info": json_safe(response_value(response, "time_info")),
             "finish_reason": json_safe(response_value(choice, "finish_reason")),
         },
     )

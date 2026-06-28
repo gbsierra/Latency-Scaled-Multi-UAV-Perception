@@ -9,7 +9,12 @@ from typing import Any
 from src.benchmark_cases import load_selected_cases, resolve_uav_image_paths
 from src.cerebras_models import CEREBRAS_PROVIDER, GEMMA_4_31B_MODEL, call_cerebras
 from src.github_models import GITHUB_MODELS_PROVIDER, PHI_4_MULTIMODAL_MODEL, call_github_models
-from src.model_clients import ModelCall, ModelRequest, call_model
+from src.model_clients import (
+    ModelCall,
+    ModelRequest,
+    call_model,
+    provider_reported_latency_ms as model_provider_reported_latency_ms,
+)
 from src.prompts import build_answer_prompt
 from src.results import write_jsonl
 from src.scoring import score_result
@@ -39,20 +44,8 @@ def image_payload_stats(image_paths: tuple[Path, ...]) -> dict[str, int]:
 
 
 def provider_reported_latency_ms(provider_metadata: dict[str, Any]) -> int | float | None:
-    """Return provider total duration when GitHub includes latency checkpoints."""
-    usage = provider_metadata.get("usage")
-    if not isinstance(usage, dict):
-        return None
-
-    latency_checkpoint = usage.get("latency_checkpoint")
-    if not isinstance(latency_checkpoint, dict):
-        return None
-
-    total_duration_ms = latency_checkpoint.get("total_duration_ms")
-    if isinstance(total_duration_ms, int | float):
-        return total_duration_ms
-
-    return None
+    """Return provider total duration when provider metadata includes it."""
+    return model_provider_reported_latency_ms(provider_metadata)
 
 
 def find_selected_case(question_id: str) -> dict[str, Any]:

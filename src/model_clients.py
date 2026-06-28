@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from time import perf_counter
 from typing import Any
+
+from src.results import to_jsonable
 
 
 class ModelClientError(ValueError):
@@ -50,6 +52,14 @@ ModelCall = Callable[[ModelRequest], str | ModelOutput]
 # Injectable timer keeps latency measurement testable without sleeping.
 Timer = Callable[[], float]
 
+PROVIDER_LATENCY_PATHS = (
+    ("usage", "latency_checkpoint", "total_duration_ms"),
+    ("time_info", "total_duration_ms"),
+    ("time_info", "total_latency_ms"),
+    ("time_info", "total_time_ms"),
+    ("time_info", "latency_ms"),
+)
+
 
 def validate_model_request(request: ModelRequest) -> None:
     """Fail before provider calls when benchmark inputs are incomplete."""
@@ -74,6 +84,22 @@ def validate_model_request(request: ModelRequest) -> None:
             raise ModelClientError("image_paths must contain pathlib.Path values")
 
 
+def provider_reported_latency_ms(provider_metadata: Mapping[str, Any]) -> int | float | None:
+    """Return provider-reported total latency when known metadata fields exist."""
+    for path in PROVIDER_LATENCY_PATHS:
+        value: Any = provider_metadata
+        for key in path:
+            if not isinstance(value, Mapping):
+                value = None
+                break
+            value = value.get(key)
+
+        if isinstance(value, int | float):
+            return value
+
+    return None
+
+
 def call_model(
     request: ModelRequest,
     model_call: ModelCall,
@@ -89,7 +115,7 @@ def call_model(
 
     if isinstance(adapter_output, ModelOutput):
         raw_text = adapter_output.raw_text
-        provider_metadata = adapter_output.provider_metadata
+        provider_metadata = to_jsonable(adapter_output.provider_metadata)
     elif isinstance(adapter_output, str):
         raw_text = adapter_output
         provider_metadata = {}
@@ -99,10 +125,13 @@ def call_model(
     if not isinstance(raw_text, str):
         raise ModelClientError("model_call raw_text must be text")
 
+    if not isinstance(provider_metadata, Mapping):
+        raise ModelClientError("model_call provider_metadata must be an object")
+
     return ModelResponse(
         provider=request.provider,
         model=request.model,
         raw_text=raw_text,
         latency_ms=(finished_at - started_at) * 1000,
-        provider_metadata=provider_metadata,
+        provider_metadata=dict(provider_metadata),
     )

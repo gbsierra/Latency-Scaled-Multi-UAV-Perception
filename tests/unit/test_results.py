@@ -1,6 +1,6 @@
 import pytest
 
-from src.results import ResultFormatError, append_jsonl, read_jsonl, write_jsonl
+from src.results import ResultFormatError, append_jsonl, read_jsonl, to_jsonable, write_jsonl
 from src.scoring import score_answer
 
 
@@ -30,6 +30,28 @@ def test_append_jsonl_preserves_existing_rows(tmp_path):
     append_jsonl(path, [{"question_id": "case-2"}])
 
     assert list(read_jsonl(path)) == [{"question_id": "case-1"}, {"question_id": "case-2"}]
+
+
+def test_write_jsonl_converts_non_json_safe_values(tmp_path):
+    class SdkUsage:
+        def __init__(self):
+            self.total_tokens = 12
+
+    path = tmp_path / "scores.jsonl"
+
+    write_jsonl(path, [{"path": tmp_path / "image.png", "usage": SdkUsage()}])
+
+    assert list(read_jsonl(path)) == [
+        {"path": str(tmp_path / "image.png"), "usage": {"total_tokens": 12}}
+    ]
+
+
+def test_to_jsonable_uses_model_dump_when_available():
+    class ModelDumpValue:
+        def model_dump(self):
+            return {"total_tokens": 24}
+
+    assert to_jsonable(ModelDumpValue()) == {"total_tokens": 24}
 
 
 def test_read_jsonl_skips_blank_lines(tmp_path):

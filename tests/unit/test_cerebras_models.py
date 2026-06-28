@@ -23,6 +23,7 @@ class FakeCompletions:
             "model": GEMMA_4_31B_MODEL,
             "choices": [{"finish_reason": "stop", "message": {"content": "Answer: C"}}],
             "usage": {"prompt_tokens": 100, "completion_tokens": 2, "total_tokens": 102},
+            "time_info": {"total_time_ms": 321},
         }
 
 
@@ -66,6 +67,7 @@ def test_parse_cerebras_response_extracts_assistant_text_and_metadata():
         "model": GEMMA_4_31B_MODEL,
         "choices": [{"finish_reason": "stop", "message": {"content": "Answer: C"}}],
         "usage": {"prompt_tokens": 100, "completion_tokens": 2, "total_tokens": 102},
+        "time_info": {"total_time_ms": 321},
     }
 
     output = parse_cerebras_response(response)
@@ -74,6 +76,7 @@ def test_parse_cerebras_response_extracts_assistant_text_and_metadata():
     assert output.provider_metadata["response_id"] == "chatcmpl-cerebras"
     assert output.provider_metadata["response_model"] == GEMMA_4_31B_MODEL
     assert output.provider_metadata["usage"]["total_tokens"] == 102
+    assert output.provider_metadata["time_info"]["total_time_ms"] == 321
     assert output.provider_metadata["finish_reason"] == "stop"
 
 

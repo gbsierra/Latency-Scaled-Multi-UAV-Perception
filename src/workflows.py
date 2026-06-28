@@ -11,7 +11,13 @@ from typing import Any
 from src.benchmark_cases import DEFAULT_SELECTED_DATASET_ROOT, resolve_uav_image_paths
 from src.cerebras_models import CEREBRAS_PROVIDER, GEMMA_4_31B_MODEL, call_cerebras
 from src.github_models import GITHUB_MODELS_PROVIDER, PHI_4_MULTIMODAL_MODEL, call_github_models
-from src.model_clients import ModelCall, ModelRequest, ModelResponse, call_model
+from src.model_clients import (
+    ModelCall,
+    ModelRequest,
+    ModelResponse,
+    call_model,
+    provider_reported_latency_ms,
+)
 from src.prompts import (
     FUSION_COMPARER_PROMPT_ID,
     GLOBAL_SINGLE_PROMPT_ID,
@@ -109,6 +115,7 @@ def build_workflow_row(
         "max_tokens": request.max_tokens,
         "run_index": run_index,
         "client_wall_clock_latency_ms": latency_ms,
+        "provider_reported_latency_ms": provider_reported_latency_ms(metadata),
         "provider_metadata": metadata,
         **_provider_timing(metadata),
         **_image_payload_stats(request.image_paths),
