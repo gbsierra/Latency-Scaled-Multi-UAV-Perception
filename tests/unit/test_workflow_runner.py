@@ -111,6 +111,38 @@ def test_run_workflow_batch_writes_rows_incrementally(tmp_path):
     assert rows[0]["question_id"] == "real-1"
 
 
+def test_run_workflow_batch_appends_by_default(tmp_path):
+    output_path = tmp_path / "rows.jsonl"
+
+    def fake_workflow(case, **_kwargs):
+        return {
+            "workflow": GLOBAL_SINGLE_WORKFLOW,
+            "question_id": case["question_id"],
+            "latency_ms": 10.0,
+            "parsed_answer": "A",
+            "correct": True,
+            "actionable": True,
+        }
+
+    run_workflow_batch(
+        [runner_cases()[0]],
+        [GLOBAL_SINGLE_WORKFLOW],
+        output_path,
+        provider="local",
+        append=False,
+        workflow_functions={GLOBAL_SINGLE_WORKFLOW: fake_workflow},
+    )
+    run_workflow_batch(
+        [runner_cases()[1]],
+        [GLOBAL_SINGLE_WORKFLOW],
+        output_path,
+        provider="local",
+        workflow_functions={GLOBAL_SINGLE_WORKFLOW: fake_workflow},
+    )
+
+    assert [row["question_id"] for row in read_jsonl(output_path)] == ["real-1", "sim5-1"]
+
+
 def test_run_workflow_batch_can_continue_with_error_row(tmp_path):
     output_path = tmp_path / "rows.jsonl"
 

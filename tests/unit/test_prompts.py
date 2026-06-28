@@ -77,8 +77,11 @@ def test_build_per_uav_observation_prompt_limits_context_to_one_view():
 
     assert "only UAV2's UAV image" in prompt
     assert "Do not infer from other UAVs" in prompt
+    assert "Do not choose A, B, C, or D" in prompt
+    assert "visibility: clear | degraded | blocked | uncertain" in prompt
+    assert "usefulness: high | medium | low | uncertain" in prompt
+    assert "supports: A | B | C | D | none | uncertain" in prompt
     assert "Which view is useful?" in prompt
-    assert "1-3 short bullet points" in prompt
 
 
 def test_build_fusion_prompt_includes_observations_and_final_answer_instruction():
@@ -89,6 +92,8 @@ def test_build_fusion_prompt_includes_observations_and_final_answer_instruction(
     )
 
     assert "fusion/comparer" in prompt
+    assert "Prefer high-usefulness direct evidence" in prompt
+    assert "Discount degraded, blocked, or uncertain observations" in prompt
     assert "UAV1: blurred image" in prompt
     assert "UAV2: clear vehicle visible" in prompt
     assert "Final answer letter only" in prompt

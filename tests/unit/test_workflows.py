@@ -131,8 +131,8 @@ def test_run_parallel_uav_fusion_records_observers_and_scores_workflow_latency(t
     )
 
     assert row["workflow"] == PARALLEL_UAV_FUSION_WORKFLOW
-    assert row["prompt_template_id"] == "fusion_comparer_v1"
-    assert row["observer_prompt_template_id"] == "per_uav_observation_v1"
+    assert row["prompt_template_id"] == "fusion_comparer_v2"
+    assert row["observer_prompt_template_id"] == "per_uav_observation_v2"
     assert row["latency_ms"] == 1750.0
     assert row["client_wall_clock_latency_ms"] == 1750.0
     assert row["fusion_latency_ms"] >= 0

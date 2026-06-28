@@ -8,8 +8,8 @@ from collections.abc import Mapping
 OPTION_ORDER = ("A", "B", "C", "D")
 ANSWER_INSTRUCTION = "Answer with the option letter only."
 GLOBAL_SINGLE_PROMPT_ID = "global_single_v1"
-PER_UAV_OBSERVATION_PROMPT_ID = "per_uav_observation_v1"
-FUSION_COMPARER_PROMPT_ID = "fusion_comparer_v1"
+PER_UAV_OBSERVATION_PROMPT_ID = "per_uav_observation_v2"
+FUSION_COMPARER_PROMPT_ID = "fusion_comparer_v2"
 
 
 class PromptFormatError(ValueError):
@@ -61,11 +61,18 @@ def build_per_uav_observation_prompt(
 
     return (
         f"You are inspecting only {uav_text}'s UAV image.\n"
-        "Describe concise visual evidence relevant to the question and choices.\n"
-        "Do not infer from other UAVs. Do not choose a final option unless the evidence is directly visible.\n\n"
+        "Use only this image. Do not infer from other UAVs.\n"
+        "Do not choose A, B, C, or D as the final answer. Return visual evidence only.\n"
+        "For supports, name the option letter directly supported by this image, or none, or uncertain.\n\n"
         f"Question: {question_text}\n"
         f"{format_options(options)}\n\n"
-        "Return 1-3 short bullet points of evidence."
+        "Return exactly this structure:\n"
+        "visibility: clear | degraded | blocked | uncertain\n"
+        "usefulness: high | medium | low | uncertain\n"
+        "evidence:\n"
+        "- ...\n"
+        "- ...\n"
+        "supports: A | B | C | D | none | uncertain"
     )
 
 
@@ -91,7 +98,10 @@ def build_fusion_prompt(
 
     return (
         "You are the fusion/comparer for an AirCopBench multi-UAV question.\n"
-        "Use the per-UAV observations to compare evidence against the same answer choices.\n"
+        "Use the structured per-UAV observations to compare evidence against the same answer choices.\n"
+        "Prefer high-usefulness direct evidence.\n"
+        "Discount degraded, blocked, or uncertain observations.\n"
+        "If observations conflict, choose the option best supported by the clearest useful views.\n"
         "Return only one final option letter: A, B, C, or D.\n\n"
         f"Question: {question_text}\n"
         f"{format_options(options)}\n\n"

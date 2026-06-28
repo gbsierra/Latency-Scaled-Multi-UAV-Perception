@@ -11,6 +11,7 @@ tests/
 │   ├── test_latency_probe.py      # one-case latency probe row construction
 │   ├── test_model_clients.py      # provider-neutral request/response boundary
 │   ├── test_prompts.py            # multiple-choice prompt formatting
+│   ├── test_result_summary.py     # deadline-ladder result aggregation
 │   ├── test_results.py            # JSONL result persistence
 │   ├── test_scoring.py            # answer parsing and deadline scoring
 │   ├── test_workflow_runner.py    # workflow runner selection and persistence behavior

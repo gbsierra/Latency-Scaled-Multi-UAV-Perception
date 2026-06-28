@@ -10,6 +10,7 @@ src/
 ├── latency_probe.py      # run one-case provider latency probes
 ├── model_clients.py      # normalize provider requests, responses, and latency
 ├── prompts.py            # build multiple-choice prompts
+├── result_summary.py     # summarize workflow JSONL results by deadline
 ├── results.py            # persist scored result rows
 ├── scoring.py            # parse answers and score deadline metrics
 ├── workflow_runner.py    # run selected workflow batches from the command line
