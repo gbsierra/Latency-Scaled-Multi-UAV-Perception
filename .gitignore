@@ -7,3 +7,4 @@ docs/ignore
 __pycache__/
 *.pyc
 results/
+.coverage
