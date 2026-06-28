@@ -2,6 +2,8 @@ data/raw/
 data/selected/
 data/**/.cache/
 .cache/
+.env
 docs/ignore
 __pycache__/
 *.pyc
+results/
