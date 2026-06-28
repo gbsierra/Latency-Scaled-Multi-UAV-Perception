@@ -2,7 +2,13 @@ from pathlib import Path
 
 import pytest
 
-from src.model_clients import ModelClientError, ModelRequest, call_model, validate_model_request
+from src.model_clients import (
+    ModelClientError,
+    ModelOutput,
+    ModelRequest,
+    call_model,
+    validate_model_request,
+)
 
 
 def valid_request() -> ModelRequest:
@@ -69,6 +75,24 @@ def test_call_model_returns_normalized_response_with_latency():
     assert response.model == "test-model"
     assert response.raw_text == "Answer: A"
     assert response.latency_ms == 125.0
+    assert response.provider_metadata == {}
+
+
+def test_call_model_preserves_adapter_metadata():
+    request = valid_request()
+    times = iter([1.0, 1.25])
+
+    def model_call(_received_request: ModelRequest) -> ModelOutput:
+        return ModelOutput(
+            raw_text="Answer: C",
+            provider_metadata={"usage": {"total_tokens": 24}},
+        )
+
+    response = call_model(request, model_call, timer=lambda: next(times))
+
+    assert response.raw_text == "Answer: C"
+    assert response.latency_ms == 250.0
+    assert response.provider_metadata == {"usage": {"total_tokens": 24}}
 
 
 def test_call_model_fails_when_adapter_returns_non_text_response():
@@ -76,5 +100,5 @@ def test_call_model_fails_when_adapter_returns_non_text_response():
     def model_call(_request: ModelRequest) -> str:
         return None  # type: ignore[return-value]
 
-    with pytest.raises(ModelClientError, match="model_call must return raw response text"):
+    with pytest.raises(ModelClientError, match="model_call must return raw response text or ModelOutput"):
         call_model(valid_request(), model_call)

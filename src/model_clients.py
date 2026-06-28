@@ -35,9 +35,18 @@ class ModelResponse:
     model: str
     raw_text: str
     latency_ms: float
+    provider_metadata: dict[str, Any] = field(default_factory=dict)
 
 
-ModelCall = Callable[[ModelRequest], str]
+@dataclass(frozen=True)
+class ModelOutput:
+    """Adapter output before client-side timing is attached."""
+
+    raw_text: str
+    provider_metadata: dict[str, Any] = field(default_factory=dict)
+
+
+ModelCall = Callable[[ModelRequest], str | ModelOutput]
 # Injectable timer keeps latency measurement testable without sleeping.
 Timer = Callable[[], float]
 
@@ -75,15 +84,25 @@ def call_model(
 
     # The provider adapter owns SDK details; this boundary owns timing and shape.
     started_at = timer()
-    raw_text = model_call(request)
+    adapter_output = model_call(request)
     finished_at = timer()
 
+    if isinstance(adapter_output, ModelOutput):
+        raw_text = adapter_output.raw_text
+        provider_metadata = adapter_output.provider_metadata
+    elif isinstance(adapter_output, str):
+        raw_text = adapter_output
+        provider_metadata = {}
+    else:
+        raise ModelClientError("model_call must return raw response text or ModelOutput")
+
     if not isinstance(raw_text, str):
-        raise ModelClientError("model_call must return raw response text")
+        raise ModelClientError("model_call raw_text must be text")
 
     return ModelResponse(
         provider=request.provider,
         model=request.model,
         raw_text=raw_text,
         latency_ms=(finished_at - started_at) * 1000,
+        provider_metadata=provider_metadata,
     )

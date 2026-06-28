@@ -5,6 +5,10 @@ tests/
 ├── unit/
 │   ├── test_aircopbench_cases.py  # raw metadata loader behavior
 │   ├── test_benchmark_cases.py    # selected-slice loader and image path resolver
+│   ├── test_cerebras_models.py    # Cerebras payload and response parsing
+│   ├── test_github_models.py      # GitHub Models payload and response parsing
+│   ├── test_image_payloads.py     # local image data-url encoding
+│   ├── test_latency_probe.py      # one-case latency probe row construction
 │   ├── test_model_clients.py      # provider-neutral request/response boundary
 │   ├── test_prompts.py            # multiple-choice prompt formatting
 │   ├── test_results.py            # JSONL result persistence
