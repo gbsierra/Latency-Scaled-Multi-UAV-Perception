@@ -2,8 +2,15 @@
 
 ```text
 tests/
-├── unit/         # isolated function/module behavior
-└── integration/  # multiple modules with real local data when available
+├── unit/
+│   ├── test_aircopbench_cases.py  # raw metadata loader behavior
+│   ├── test_benchmark_cases.py    # selected-slice loader and image path resolver
+│   ├── test_model_clients.py      # provider-neutral request/response boundary
+│   ├── test_prompts.py            # multiple-choice prompt formatting
+│   ├── test_results.py            # JSONL result persistence
+│   └── test_scoring.py            # answer parsing and deadline scoring
+└── integration/
+    └── test_loader_scoring_integration.py  # real local metadata module integration
 ```
 
 Run:
