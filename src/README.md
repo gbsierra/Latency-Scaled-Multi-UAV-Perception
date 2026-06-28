@@ -11,5 +11,6 @@ src/
 ├── model_clients.py      # normalize provider requests, responses, and latency
 ├── prompts.py            # build multiple-choice prompts
 ├── results.py            # persist scored result rows
-└── scoring.py            # parse answers and score deadline metrics
+├── scoring.py            # parse answers and score deadline metrics
+└── workflows.py          # run benchmark-compatible global and per-UAV fusion workflows
 ```

@@ -1,4 +1,4 @@
-"""Build AirCopBench multiple-choice prompts."""
+"""Build AirCopBench multiple-choice workflow prompts."""
 
 from __future__ import annotations
 
@@ -7,6 +7,9 @@ from collections.abc import Mapping
 
 OPTION_ORDER = ("A", "B", "C", "D")
 ANSWER_INSTRUCTION = "Answer with the option letter only."
+GLOBAL_SINGLE_PROMPT_ID = "global_single_v1"
+PER_UAV_OBSERVATION_PROMPT_ID = "per_uav_observation_v1"
+FUSION_COMPARER_PROMPT_ID = "fusion_comparer_v1"
 
 
 class PromptFormatError(ValueError):
@@ -30,3 +33,69 @@ def build_answer_prompt(question: str, options: Mapping[str, str]) -> str:
         raise PromptFormatError("question is empty")
 
     return f"{question_text}\n{format_options(options)}\n\n{ANSWER_INSTRUCTION}"
+
+
+def build_global_single_prompt(question: str, options: Mapping[str, str]) -> str:
+    """Build the all-images single-call AirCopBench answer prompt."""
+    instruction = (
+        "You are answering a multiple-choice AirCopBench UAV perception question.\n"
+        "Use the provided UAV images, question, and answer choices.\n"
+        "Return only one letter: A, B, C, or D.\n\n"
+    )
+    return instruction + build_answer_prompt(question, options)
+
+
+def build_per_uav_observation_prompt(
+    uav_id: str,
+    question: str,
+    options: Mapping[str, str],
+) -> str:
+    """Build a compact one-view observer prompt for parallel fusion workflows."""
+    uav_text = uav_id.strip()
+    if not uav_text:
+        raise PromptFormatError("uav_id is empty")
+
+    question_text = question.strip()
+    if not question_text:
+        raise PromptFormatError("question is empty")
+
+    return (
+        f"You are inspecting only {uav_text}'s UAV image.\n"
+        "Describe concise visual evidence relevant to the question and choices.\n"
+        "Do not infer from other UAVs. Do not choose a final option unless the evidence is directly visible.\n\n"
+        f"Question: {question_text}\n"
+        f"{format_options(options)}\n\n"
+        "Return 1-3 short bullet points of evidence."
+    )
+
+
+def build_fusion_prompt(
+    question: str,
+    options: Mapping[str, str],
+    observations: Mapping[str, str],
+) -> str:
+    """Build the text-only fusion prompt that returns one final option letter."""
+    question_text = question.strip()
+    if not question_text:
+        raise PromptFormatError("question is empty")
+
+    if not observations:
+        raise PromptFormatError("observations are required")
+
+    observation_lines: list[str] = []
+    for uav_id, observation in observations.items():
+        observation_text = str(observation).strip()
+        if not observation_text:
+            raise PromptFormatError(f"{uav_id} observation is empty")
+        observation_lines.append(f"{uav_id}: {observation_text}")
+
+    return (
+        "You are the fusion/comparer for an AirCopBench multi-UAV question.\n"
+        "Use the per-UAV observations to compare evidence against the same answer choices.\n"
+        "Return only one final option letter: A, B, C, or D.\n\n"
+        f"Question: {question_text}\n"
+        f"{format_options(options)}\n\n"
+        "Per-UAV observations:\n"
+        + "\n".join(observation_lines)
+        + "\n\nFinal answer letter only."
+    )

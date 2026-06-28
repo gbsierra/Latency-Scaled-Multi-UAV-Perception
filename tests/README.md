@@ -12,7 +12,8 @@ tests/
 │   ├── test_model_clients.py      # provider-neutral request/response boundary
 │   ├── test_prompts.py            # multiple-choice prompt formatting
 │   ├── test_results.py            # JSONL result persistence
-│   └── test_scoring.py            # answer parsing and deadline scoring
+│   ├── test_scoring.py            # answer parsing and deadline scoring
+│   └── test_workflows.py          # benchmark-compatible workflow orchestration
 └── integration/
     └── test_loader_scoring_integration.py  # real local metadata module integration
 ```
