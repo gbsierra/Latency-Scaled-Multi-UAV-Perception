@@ -83,7 +83,7 @@ The focused run narrowed the gap, but did not reverse it. Fusion fixed more case
 
 ## Provider latency
 
-The provider comparison is a speed probe, not a clean architecture comparison. The Phi run used a limited free GitHub Models provider and had fewer successful rows.
+The provider comparison is a speed probe, not a clean architecture comparison. The Phi run used a limited free GitHub Models provider and therefore had low usage for results.
 
 On successful broad v0 rows:
 

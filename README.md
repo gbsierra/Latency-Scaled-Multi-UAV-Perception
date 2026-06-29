@@ -36,17 +36,82 @@ actionable = correct AND latency_ms <= deadline_ms
 
 Note: For the original benchmark task definitions, see: [AirCopBench task definitions](https://github.com/zhajirong/AirCopBench#task-definition)
 
-1. [Product Definition](docs/01_product_definition.md)  
-   What the demo is, what it shows, and what it is not.
+   <details>
+   <summary>Why AirCopBench failure modes justify per-UAV perception plus fusion.</summary>
 
-2. [Research Bottleneck + Architecture Choice](docs/02_research_bottleneck_architecture.md)  
-   Why AirCopBench failure modes justify per-UAV perception plus fusion.
+   AirCopBench shows that multi-UAV multimodal models fail in ways that need structured cross-view evidence.
 
-3. [AirCopBench Paper Notes](docs/03_aircopbench_paper_notes.md)  
-   What the benchmark provides and why it is a good testbed.
+   > "The errors in MLLM reasoning primarily stem from three causes: (1) Perception Hallucination Errors... (2) Spatial Reasoning Errors... (3) Multi-image Understanding Errors..." (AirCopBench, arXiv 2511.11025)
 
-4. [Time Threshold Proof](docs/04_time_threshold_proof.md)  
-   Why better answers only matter if they arrive before the deadline.
+   AirCopBench input is naturally separated by UAV view. This means a single global call can under-attend to one image or have conflicting evidence across images.
+
+   The tested workflow uses decomposition plus aggregation:
+   1. inspect each UAV view independently
+   2. preserve a short structured observation per view
+   3. compare all observations against the same question and choices
+   4. return one final answer
+
+   This is not a claim that a second model can just reliably verify the first model. A regular second pass verifier can share the same blind spots but view-level decomposition can maybe improve what evidence reaches the final decision.
+
+   To recap: 
+   AirCopBench failure: hallucination + spatial errors + multi-image errors
+   Possible Per-UAV fusion response: view-specific observations + cross-view comparison + final answer
+
+   The test is: can parallel per-UAV fusion improve accuracy and actionability over global_single enough to justify its added latency?
+
+   </details>
+
+
+   <details>
+   <summary>Why AirCopBench is a useful benchmark for this project.</summary>
+
+   AirCopBench is useful because it already provides the hard part of the testbed:
+
+   - multi-UAV images
+   - text questions
+   - A/B/C/D answer choices
+   - ground-truth labels
+   - task categories for perception, assessment, and collaboration
+
+   That means this project does not need to invent a drone benchmark.
+
+   AirCopBench is also a better fit than generic image VQA because the tasks are built around multi-drone collaboration.
+
+   The original AirCopBench scoring asks: Was the answer correct?
+
+   This project adds: Was the answer correct within a task-relevant latency threshold?
+
+   So AirCopBench provides the benchmark substrate, and this project adds latency-scaled workflow evaluation.
+
+   </details>
+
+   <details>
+   <summary>Why better answers only matter if they arrive before the deadline.</summary>
+
+   Correct answers are not always useful if they arrive after the decision window has passed.
+
+   This project scores actionability as:
+
+   ```text
+   actionable = correct AND latency_ms <= threshold_ms
+   ```
+
+   The long-term target is the **100-500 ms** range, not because that number was chosen by vibes, but because robotics and teleoperation research shows that delay can affect whether visual information is still useful for action.
+
+   Examples:
+
+   * One mobile-robot teleoperation study reports human delay perception around **100-200 ms**, performance degradation around **200-300 ms**, and delay-cost saturation around **400 ms**.
+   Source: Chen et al., 2025 — https://arxiv.org/abs/2508.18074
+
+   * One vision-teleoperation study reports sharp closed-loop degradation between **150 ms and 225 ms** of one-way perception latency.
+   Source: Khalil and Kwon, 2026 — https://arxiv.org/abs/2603.06850
+
+   This project does not claim to hit those real-time control thresholds yet. Current cloud multimodal workflows are still slower.
+
+   The point is to measure the gap directly: faster inference only matters if it makes richer UAV workflows more useful before the answer becomes stale.
+
+   </details>
+
 
 ## Citation
 
