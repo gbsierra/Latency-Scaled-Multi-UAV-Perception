@@ -69,13 +69,13 @@ can parallel per-UAV fusion improve raw accuracy and actionable accuracy over gl
 This project uses AirCopBench as the multi-UAV benchmark source.
 
 ```bibtex
-@misc{zha2025aircopbench,
-  title={AirCopBench: A Benchmark for Multi-drone Collaborative Embodied Perception and Reasoning},
+@inproceedings{zha2026aircopbench,
+  title={Aircopbench: A benchmark for multi-drone collaborative embodied perception and reasoning},
   author={Zha, Jirong and Fan, Yuxuan and Zhang, Tianyu and Chen, Geng and Chen, Yingfeng and Gao, Chen and Chen, Xinlei},
-  year={2025},
-  eprint={2511.11025},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  url={https://arxiv.org/abs/2511.11025}
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={40},
+  number={2},
+  pages={1507--1515},
+  year={2026}
 }
 ```

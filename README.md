@@ -1,27 +1,23 @@
 # Correct but late is stale.
 
-AirCopBench shows multi-UAV perception is hard.  
-This project asks the next question:
+[AirCopBench](https://arxiv.org/abs/2511.11025) shows multi-UAV perception is hard.  
+Cerebras-speed inference raises the next applied question:
 
-> Can parallel per-UAV perception agents and one fusion agent make a better multi-UAV decision before the deadline?
+> Can faster multimodal inference create room for richer multi-UAV workflows that improve hard benchmark answers before they become stale?
 
-The point is not just faster inference.
+This project tests one research-motivated idea: parallel per-UAV perception followed by fusion of the results.
 
 The point is:
 
-> fast inference may make a better workflow possible before time runs out.
-
+> lower latency expands the design space for applied UAV workflows, but adding more inference calls only helps when the workflow improves the right cases enough to justify its latency cost.
 ## What this demo tests
 
-Two workflows:
+![Global vs per-UAV fusion execution flow](docs/assets/01_global_vs_fusion_execution_flow.png)
 
-```text
-global_single:
-all UAV images + question + choices -> one model answer
+The comparison is simple:
 
-parallel_uav_fusion:
-one concurrent observation per UAV image -> fusion/comparer -> one model answer
-```
+- `global_single`: one model call over all UAV images.
+- `parallel_uav_fusion`: one model call per UAV image, then one final call to combine the notes.
 
 Scored by:
 
@@ -29,7 +25,16 @@ Scored by:
 actionable = correct AND latency_ms <= deadline_ms
 ```
 
+## What we found
+
+`global_single` was the stronger default workflow, while `parallel_uav_fusion` fixed some cases but also introduced comparable regressions and added latency.
+
+**See the full benchmark story here:** [Benchmark Results](docs/05_benchmark_results.md)
+
+
 ## Start here
+
+Note: For the original benchmark task definitions, see: [AirCopBench task definitions](https://github.com/zhajirong/AirCopBench#task-definition)
 
 1. [Product Definition](docs/01_product_definition.md)  
    What the demo is, what it shows, and what it is not.
@@ -43,31 +48,18 @@ actionable = correct AND latency_ms <= deadline_ms
 4. [Time Threshold Proof](docs/04_time_threshold_proof.md)  
    Why better answers only matter if they arrive before the deadline.
 
-## What this is not
-
-- not drone control
-- not a full benchmark leaderboard
-- not a fake simulator
-- not mocked results
-- not a claim that more agents always win
-
-## Core claim
-
-AirCopBench measures correctness.  
-This project measures whether a multi-UAV workflow returns a correct answer in time to act.
-
 ## Citation
 
 This project uses AirCopBench as the multi-UAV benchmark source.
 
 ```bibtex
-@misc{zha2025aircopbench,
-  title={AirCopBench: A Benchmark for Multi-drone Collaborative Embodied Perception and Reasoning},
+@inproceedings{zha2026aircopbench,
+  title={Aircopbench: A benchmark for multi-drone collaborative embodied perception and reasoning},
   author={Zha, Jirong and Fan, Yuxuan and Zhang, Tianyu and Chen, Geng and Chen, Yingfeng and Gao, Chen and Chen, Xinlei},
-  year={2025},
-  eprint={2511.11025},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  url={https://arxiv.org/abs/2511.11025}
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={40},
+  number={2},
+  pages={1507--1515},
+  year={2026}
 }
 ```
