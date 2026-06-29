@@ -28,7 +28,7 @@ That did not happen.
 
 ![Accuracy vs. median latency](assets/04_accuracy_latency_tradeoff.png)
 
-`global_single` was faster, more accurate, and more actionable overall.
+`global_single` (in blue) was faster, more accurate, and more actionable overall than `parallel_uav_fusion` (in orange).
 
 ---
 
@@ -53,7 +53,7 @@ The problem is that fusion created more regressions than fixes, while also addin
 
 ## Focused Object Matching result
 
-The broad run showed one promising signal: Object Matching.
+The initial broad run showed one promising signal: Object Matching.
 
 ```text
 Object Matching in broad v0:
@@ -83,7 +83,7 @@ The focused run narrowed the gap, but did not reverse it. Fusion fixed more case
 
 ## Provider latency
 
-The provider comparison is a speed probe, not a clean architecture comparison. The Phi run used a limited free GitHub Models provider and therefore had low usage for results.
+The provider comparison is a speed probe, not a clean architecture comparison as it is already expected for Cerebras inference times to excel. As well, the Phi run used a limited free GitHub Models provider and therefore had low usage for results.
 
 On successful broad v0 rows:
 
@@ -94,7 +94,7 @@ On successful broad v0 rows:
 
 ![Provider latency on broad v0](assets/05_provider_latency_successful_rows.png)
 
-Cerebras reduced latency, especially for the multi-call workflow. But speed alone did not make fusion better.
+Cerebras/Gemma4 (in blue) reduced latency compared to Phi4 (through Github Models), especially for the multi-call workflow. But speed alone did not make the parallel fusion better.
 
 ---
 
@@ -110,6 +110,6 @@ The result is:
 
 The simple parallel-per-image workflow recovered some hard cases, especially in Object Matching, but it also introduced comparable regressions and added coordination latency.
 
-Future multi-agent UAV workflows need to be more selective.
+This implies that future multi-agent UAV workflows should be more selective as for when to use more inference.
 
-Correct but late is stale. But more compute is not automatically better.
+Especially in usecases where correct but late is stale. And where more compute is not automatically better.

@@ -10,9 +10,7 @@ Read first:
 
 - `README.md` for the project thesis
 - `CONTRIBUTING.md` before code changes
-- `docs/01_product_definition.md` before product changes
-- `docs/ignore/three_phase_build_plan.md` before scope decisions
-- `docs/ignore/deliverables.md` before submission work
+
 
 Use `docs/` for public project docs. Use `docs/ignore/` only for local planning notes.
 
