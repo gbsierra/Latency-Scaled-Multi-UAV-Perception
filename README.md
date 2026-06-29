@@ -90,7 +90,7 @@ Note: For the original benchmark task definitions, see: [AirCopBench task defini
    To recap.
 
    AirCopBench failure: hallucination + spatial errors + multi-image errors
-   
+
    Possible Per-UAV fusion response: view-specific observations + cross-view comparison + final answer
 
    The test is: can parallel per-UAV fusion improve accuracy and actionability over global_single enough to justify its added latency?
@@ -122,7 +122,6 @@ Note: For the original benchmark task definitions, see: [AirCopBench task defini
 
    This project does not claim to hit those real-time control deadlines yet. Current cloud multimodal workflows are still slower.
 
-   The point is to measure the hypothetical/theoretical gaps: faster inference only matters if it makes multi-call UAV workflows more useful before the answer becomes stale.
 
    </details>
 
