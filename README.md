@@ -25,7 +25,10 @@ Scored by:
 actionable = correct AND latency_ms <= deadline_ms
 ```
 
-## What we found
+## Results
+
+[![Watch the video](demo.png)](https://www.loom.com/share/ed357558a8ca4a21be1caf3e750e75d2)
+
 
 `global_single` was the stronger default workflow, while `parallel_uav_fusion` fixed some cases but also introduced comparable regressions and added latency.
 
