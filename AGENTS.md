@@ -21,7 +21,6 @@ Code rules:
 - preserve AirCopBench case fields
 - add generic functions before workflow-specific wrappers
 - add short comments for intent or non-obvious logic only
-- update `docs/ignore/commit_msgs.md` for each meaningful commit-sized change
 - update `src/README.md` or `tests/README.md` when adding files there
 
 Testing rules:

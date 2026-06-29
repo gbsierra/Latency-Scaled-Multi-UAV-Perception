@@ -29,8 +29,16 @@ actionable = correct AND latency_ms <= deadline_ms
 
 `global_single` was the stronger default workflow, while `parallel_uav_fusion` fixed some cases but also introduced comparable regressions and added latency.
 
+This implies that Cerebras-speed inference can make richer UAV workflows practical to test inside a decision window, but those workflows need evidence. Use decomposition or another multi-agent architecture only when it is proven to work consistently.
+
 **See the full benchmark story here:** [Benchmark Results](docs/05_benchmark_results.md)
 
+**Replay selected benchmark cases locally:**
+
+```bash
+python3 -m pip install -r requirements-demo.txt
+python3 -m streamlit run demo/replay_app.py
+```
 
 ## FAQ
 
