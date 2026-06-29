@@ -4,11 +4,11 @@ This document summarizes the benchmark results for **Latency-Scaled Multi-UAV Pe
 
 The project asked:
 
-> Can faster multimodal inference make richer multi-UAV workflows useful before their answers become stale?
+> Can faster multimodal inference make multi-call UAV workflows useful before their answers become stale?
 
 The answer from these runs is mixed.
 
-Cerebras-speed inference made the richer workflow more practical to run. But adding more inference calls did not automatically improve results. The tested fusion workflow fixed some cases, regressed others, and added latency.
+Cerebras/Gemma inference made the multi-call workflow more practical to run. But adding more inference calls did not automatically improve results. The tested fusion workflow fixed some cases, regressed others, and added latency.
 
 ---
 
@@ -106,7 +106,7 @@ The result is not:
 
 The result is:
 
-> Cerebras-speed inference expands the design space for applied multi-agent UAV workflows, but adding more inference calls does not guarantee better results.
+> Cerebras/Gemma inference expands the design space for applied multi-agent UAV workflows, but adding more inference calls does not guarantee better results.
 
 The simple parallel-per-image workflow recovered some hard cases, especially in Object Matching, but it also introduced comparable regressions and added coordination latency.
 

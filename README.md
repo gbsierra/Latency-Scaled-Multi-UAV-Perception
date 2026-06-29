@@ -1,9 +1,9 @@
 # Correct but late is stale.
 
 [AirCopBench](https://arxiv.org/abs/2511.11025) shows multi-UAV perception is hard.  
-Cerebras-speed inference raises the next applied question:
+With Cerebras-hosted Gemma inference, a next applied question is:
 
-> Can faster multimodal inference create room for richer multi-UAV workflows that improve hard benchmark answers before they become stale?
+> Can faster multimodal inference create room for multi-call UAV workflows that improve hard benchmark answers before they become stale?
 
 This project tests one research-motivated idea: parallel per-UAV perception followed by fusion of the results.
 
@@ -29,7 +29,7 @@ actionable = correct AND latency_ms <= deadline_ms
 
 `global_single` was the stronger default workflow, while `parallel_uav_fusion` fixed some cases but also introduced comparable regressions and added latency.
 
-This implies that Cerebras-speed inference can make richer UAV workflows practical to test inside a decision window, but those workflows need evidence. Use decomposition or another multi-agent architecture only when it is proven to work consistently.
+This implies that Cerebras/Gemma inference can make multi-call UAV workflows practical to test inside a decision window, but those workflows need evidence. Use decomposition or another multi-agent architecture only when it is proven to work consistently.
 
 **See the full benchmark story here:** [Benchmark Results](docs/05_benchmark_results.md)
 
@@ -106,7 +106,7 @@ Note: For the original benchmark task definitions, see: [AirCopBench task defini
    This project scores actionability as:
 
    ```text
-   actionable = correct AND latency_ms <= threshold_ms
+   actionable = correct AND latency_ms <= deadline_ms
    ```
 
    The long-term target is the **100-500 ms** range, not because that number was chosen by vibes, but because robotics and teleoperation research shows that delay can affect whether visual information is still useful for action.
@@ -119,9 +119,9 @@ Note: For the original benchmark task definitions, see: [AirCopBench task defini
    * One vision-teleoperation study reports sharp closed-loop degradation between **150 ms and 225 ms** of one-way perception latency.
    Source: Khalil and Kwon, 2026 — https://arxiv.org/abs/2603.06850
 
-   This project does not claim to hit those real-time control thresholds yet. Current cloud multimodal workflows are still slower.
+   This project does not claim to hit those real-time control deadlines yet. Current cloud multimodal workflows are still slower.
 
-   The point is to measure the hypothetical/theoretical gaps: faster inference only matters if it makes richer UAV workflows more useful before the answer becomes stale.
+   The point is to measure the hypothetical/theoretical gaps: faster inference only matters if it makes multi-call UAV workflows more useful before the answer becomes stale.
 
    </details>
 
