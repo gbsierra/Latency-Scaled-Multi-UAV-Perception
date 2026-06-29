@@ -87,9 +87,10 @@ Note: For the original benchmark task definitions, see: [AirCopBench task defini
 
    This is not a claim that a second model can just reliably verify the first model. A regular second pass verifier can share the same blind spots but view-level decomposition can maybe improve what evidence reaches the final decision.
 
-   To recap:
+   To recap.
 
    AirCopBench failure: hallucination + spatial errors + multi-image errors
+   
    Possible Per-UAV fusion response: view-specific observations + cross-view comparison + final answer
 
    The test is: can parallel per-UAV fusion improve accuracy and actionability over global_single enough to justify its added latency?
