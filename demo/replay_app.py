@@ -727,15 +727,15 @@ def main() -> None:
 
     page = st.radio(
         "Demo page",
-        ["Global wins", "Fusion wins", "Cerebras faster"],
+        ["Cerebras faster", "Fusion wins", "Global wins"],
         horizontal=True,
     )
-    if page == "Global wins":
-        render_global_wins_trace(v1_cases, v1_results, V1_DATASET_ROOT)
+    if page == "Cerebras faster":
+        render_cerebras_faster_trace(v0_cases, v0_cerebras_rows, v0_phi_rows)
     elif page == "Fusion wins":
         render_fusion_wins_trace(v1_cases, v1_results, V1_DATASET_ROOT)
     else:
-        render_cerebras_faster_trace(v0_cases, v0_cerebras_rows, v0_phi_rows)
+        render_global_wins_trace(v1_cases, v1_results, V1_DATASET_ROOT)
 
 
 if __name__ == "__main__":
